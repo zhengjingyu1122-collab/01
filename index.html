@@ -607,6 +607,15 @@
   }
 
   // ---------- Export read-only version ----------
+  function escapeHtml(str){
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function exportReadOnly(){
     const hasAny = state.days.some(d => d.length > 0);
     if (!hasAny){
@@ -616,20 +625,25 @@
 
     const dayBlocks = state.days.map((list, i) => {
       const stopsHtml = list.length === 0
-        ? `<p class="ro-empty">${DAYS[i]}沒有安排行程</p>`
+        ? `<p class="ro-empty">${escapeHtml(DAYS[i])}沒有安排行程</p>`
         : list.map(s => `
             <div class="ro-stop">
-              <div class="ro-time">${s.time ? s.time : '－'}</div>
+              <div class="ro-time">${s.time ? escapeHtml(s.time) : '－'}</div>
               <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
-              <div class="ro-card" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name + ' 沖縄')}','_blank')">
-                <span>${s.name}</span>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name + ' 沖縄')}" target="_blank" rel="noopener noreferrer">
+                <span>${escapeHtml(s.name)}</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              </div>
+              </a>
             </div>`).join('');
-      return `<section class="ro-day" id="ro-day-${i}" style="display:${i===0?'block':'none'}">${stopsHtml}</section>`;
+      return `<section class="ro-day" id="ro-day-${i}">${stopsHtml}</section>`;
     }).join('');
 
-    const tabBtns = DAYS.map((label, i) => `<button class="ro-tab${i===0?' active':''}" data-i="${i}" onclick="roShowDay(${i})">${label}<span class="ro-en">${DAY_EN[i]}</span></button>`).join('');
+    const radios = DAYS.map((label, i) => `<input type="radio" name="roday" id="roday${i}" class="ro-radio"${i===0?' checked':''}>`).join('');
+
+    const tabBtns = DAYS.map((label, i) => `<label for="roday${i}" class="ro-tab">${escapeHtml(label)}<span class="ro-en">${DAY_EN[i]}</span></label>`).join('');
+
+    const showRules = DAYS.map((label, i) => `#roday${i}:checked ~ .ro-content #ro-day-${i}{ display:block; }`).join('\n  ');
+    const activeRules = DAYS.map((label, i) => `#roday${i}:checked ~ .ro-tabbar label[for="roday${i}"]{ background:var(--ocean-deep); color:#fff; }`).join('\n  ');
 
     const html = `<!DOCTYPE html>
 <html lang="zh-Hant">
@@ -640,43 +654,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{ --bg:#F6F1E4; --surface:#FFFFFF; --ocean-deep:#0E4A57; --ocean:#1B8A9B; --ocean-light:#CDE8E8; --coral:#E2593F; --ink:#1D2B2C; --ink-soft:#5B6B69; --line:#DCD2B8; }
-  *{ box-sizing:border-box; }
-  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Noto Sans TC',sans-serif; padding:28px 16px 60px; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: rgba(27,138,155,0.25); }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Noto Sans TC',sans-serif; padding:24px 16px 90px; }
   .wrap{ max-width:720px; margin:0 auto; }
-  h1{ font-family:'Noto Serif TC',serif; font-weight:900; font-size:26px; color:var(--ocean-deep); margin:0 0 4px; }
-  .sub{ font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; }
-  .ro-tabs{ display:flex; gap:4px; overflow-x:auto; border-bottom:2px solid var(--line); margin-bottom:18px; }
-  .ro-tab{ font-family:'Noto Serif TC',serif; font-weight:700; font-size:14px; padding:9px 16px 11px; background:none; border:none; color:var(--ink-soft); cursor:pointer; white-space:nowrap; position:relative; top:2px; }
-  .ro-tab .ro-en{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:400; font-size:9px; letter-spacing:1px; }
-  .ro-tab.active{ color:var(--ocean-deep); border-bottom:3px solid var(--coral); }
-  .ro-day{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; }
+  h1{ font-family:'Noto Serif TC',serif; font-weight:900; font-size:24px; color:var(--ocean-deep); margin:0 0 4px; }
+  .sub{ font-size:12.5px; color:var(--ink-soft); margin:0 0 18px; }
+  .ro-radio{ position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
+  .ro-day{ display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; }
   .ro-empty{ text-align:center; color:var(--ink-soft); padding:30px 0; font-size:13.5px; margin:0; }
-  .ro-stop{ display:grid; grid-template-columns:66px 20px 1fr; gap:4px 10px; align-items:center; margin-bottom:4px; }
+  .ro-stop{ display:grid; grid-template-columns:60px 20px 1fr; gap:4px 10px; align-items:center; margin-bottom:4px; }
   .ro-time{ font-size:12.5px; font-weight:700; color:var(--ocean-deep); text-align:center; }
   .ro-dotcol{ display:flex; flex-direction:column; align-items:center; height:100%; min-height:50px; }
-  .ro-dot{ width:11px; height:11px; border-radius:50%; background:var(--ocean); border:2px solid #fff; box-shadow:0 0 0 2px var(--ocean); margin-top:6px; }
+  .ro-dot{ width:11px; height:11px; border-radius:50%; background:var(--ocean); border:2px solid #fff; box-shadow:0 0 0 2px var(--ocean); margin-top:6px; flex-shrink:0; }
   .ro-thread{ width:2px; flex:1; background:var(--line); margin-top:2px; }
   .ro-stop:last-child .ro-thread{ background:transparent; }
-  .ro-card{ background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14px; font-weight:500; display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; }
-  .ro-card:hover{ background:var(--ocean-light); border-color:var(--ocean); }
+  .ro-card{ background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:14px; font-weight:500; display:flex; align-items:center; justify-content:space-between; gap:8px; text-decoration:none; color:var(--ink); }
+  .ro-card:active{ background:var(--ocean-light); border-color:var(--ocean); }
   .ro-card svg{ width:15px; height:15px; color:var(--coral); flex-shrink:0; opacity:.8; }
-  footer{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:20px; }
+  footer{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:16px; }
+
+  .ro-tabbar{
+    display:flex; gap:4px; margin-top:18px;
+    padding:8px; background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    position:sticky; bottom:12px; box-shadow:0 4px 16px rgba(14,74,87,0.12);
+  }
+  .ro-tab{
+    flex:1; text-align:center;
+    font-family:'Noto Serif TC',serif; font-weight:700; font-size:12.5px;
+    padding:10px 4px; color:var(--ink-soft); border-radius:10px; cursor:pointer;
+    -webkit-user-select:none; user-select:none;
+  }
+  .ro-tab .ro-en{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:400; font-size:8.5px; letter-spacing:1px; margin-top:1px; }
+  ${showRules}
+  ${activeRules}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>達睿沖繩員工旅遊・行程表</h1>
   <p class="sub">點景點卡片可直接開啟 Google 地圖導航</p>
-  <div class="ro-tabs">${tabBtns}</div>
-  ${dayBlocks}
+
+  ${radios}
+  <div class="ro-content">
+    ${dayBlocks}
+  </div>
+
+  <div class="ro-tabbar">
+    ${tabBtns}
+  </div>
+
   <footer>此為唯讀行程表，如需調整請聯繫行程規劃人員</footer>
 </div>
-<script>
-  function roShowDay(i){
-    document.querySelectorAll('.ro-day').forEach((el, idx) => el.style.display = idx === i ? 'block' : 'none');
-    document.querySelectorAll('.ro-tab').forEach((el, idx) => el.classList.toggle('active', idx === i));
-  }
-<\/script>
 </body>
 </html>`;
 

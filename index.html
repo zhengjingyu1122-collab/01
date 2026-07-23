@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>達睿沖繩員工旅遊・行程規劃器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F6F1E4;
+    --surface: #FFFFFF;
+    --ocean-deep: #0E4A57;
+    --ocean: #1B8A9B;
+    --ocean-light: #CDE8E8;
+    --coral: #E2593F;
+    --ink: #1D2B2C;
+    --ink-soft: #5B6B69;
+    --line: #DCD2B8;
+    --leaf: #6E9271;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html{ width:100%; overflow-x:hidden; }
+
+  body{
+    margin:0;
+    width:100%;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 8% 4%, rgba(27,138,155,0.10), transparent 40%),
+      radial-gradient(circle at 95% 0%, rgba(226,89,63,0.08), transparent 35%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    padding: 24px 16px 60px;
+  }
+
+  .wrap{ max-width: 1180px; margin: 0 auto; }
+
+  /* ---------- Header ---------- */
+  header.hero{
+    display:flex;
+    flex-wrap: wrap;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+    border-bottom: 2px solid var(--ocean-deep);
+    position: relative;
+  }
+  .hero-title-block{ display:flex; align-items:center; gap:14px; min-width:0; }
+  .shisa{ width:44px; height:44px; flex-shrink:0; }
+  .eyebrow{
+    font-size: 12.5px;
+    letter-spacing: 3px;
+    color: var(--coral);
+    font-weight:700;
+    margin: 0 0 6px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    font-size: clamp(22px, 5vw, 34px);
+    margin: 0;
+    color: var(--ocean-deep);
+    line-height:1.3;
+  }
+  .hero-sub{
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-align:right;
+    max-width: 260px;
+    line-height:1.6;
+  }
+  @media (max-width: 560px){
+    .hero-sub{ text-align:left; max-width:100%; }
+  }
+
+  .export-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background: var(--ocean-deep);
+    color:#fff;
+    border:none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-family:'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    font-weight:700;
+    cursor:pointer;
+    white-space: nowrap;
+    margin-top: 8px;
+  }
+  .export-btn:hover{ background: var(--ocean); }
+  .export-btn svg{ width:15px; height:15px; }
+  .wave{ display:block; width:100%; height:14px; margin: -2px 0 24px; }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    gap: 22px;
+    align-items:start;
+    width:100%;
+  }
+  @media (max-width: 860px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Sidebar: 景點按鈕庫 ---------- */
+  .panel{
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    box-shadow: 0 2px 10px rgba(14,74,87,0.05);
+  }
+  .sidebar{ padding: 20px 18px; position: sticky; top: 20px; max-width:100%; }
+  @media (max-width: 860px){
+    .sidebar{ position: static; }
+  }
+  .sidebar h2{
+    font-family:'Noto Serif TC', serif;
+    font-size: 16px;
+    margin: 0 0 4px;
+    color: var(--ocean-deep);
+  }
+  .sidebar .hint{
+    font-size:12px; color: var(--ink-soft); margin: 0 0 16px;
+  }
+  .region{ margin-bottom: 16px; }
+  .region-label{
+    font-size: 11.5px;
+    font-weight:700;
+    letter-spacing: 1.5px;
+    color: var(--ocean);
+    margin: 0 0 8px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .region-label::before{
+    content:"";
+    width:8px; height:8px; border-radius:50%;
+    background: var(--ocean);
+    display:inline-block;
+  }
+  .spot-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    text-align:left;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-family:'Noto Sans TC', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink);
+    cursor:pointer;
+    margin-bottom: 7px;
+    transition: all .15s ease;
+  }
+  .spot-btn:hover{
+    background: var(--ocean-light);
+    border-color: var(--ocean);
+    transform: translateX(2px);
+  }
+  .spot-btn:active{ transform: translateX(2px) scale(.98); }
+  .spot-btn .plus{
+    color: var(--coral); font-weight:700; font-size:15px;
+  }
+
+  .custom-add{
+    margin-top: 6px;
+    display:flex;
+    gap:6px;
+  }
+  .custom-add input{
+    flex:1;
+    min-width:0;
+    border:1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:13px;
+  }
+  .custom-add button{
+    background: var(--ocean-deep);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding: 0 14px;
+    font-weight:700;
+    cursor:pointer;
+    font-size:13px;
+  }
+  .custom-add button:hover{ background: var(--ocean); }
+
+  /* ---------- Main: tabs + timeline ---------- */
+  .main-panel{ padding: 4px 0 0; }
+
+  .tabs{
+    display:flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid var(--line);
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size: 15px;
+    padding: 10px 16px 12px;
+    background: transparent;
+    border: none;
+    cursor:pointer;
+    color: var(--ink-soft);
+    position:relative;
+    top: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tab .day-en{
+    display:block;
+    font-family:'Noto Sans TC', sans-serif;
+    font-weight:400;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .tab.active{
+    color: var(--ocean-deep);
+    border-bottom: 3px solid var(--coral);
+  }
+  .tab .count{
+    display:inline-block;
+    min-width:16px;
+    padding: 0 5px;
+    margin-left:6px;
+    background: var(--ocean-light);
+    color: var(--ocean-deep);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight:700;
+  }
+  .tab.active .count{ background: var(--coral); color:#fff; }
+
+  .day-panel{
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    padding: 22px 24px 26px;
+    min-height: 340px;
+    box-shadow: 0 2px 10px rgba(14,74,87,0.05);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+  }
+  .empty-state svg{ width:56px; height:56px; margin-bottom: 12px; opacity:.5; }
+  .empty-state p{ font-size: 13.5px; margin:0; }
+
+  /* timeline */
+  .timeline{ position:relative; padding-left: 6px; width:100%; }
+  .stop{
+    display:grid;
+    grid-template-columns: 84px 20px 1fr auto;
+    align-items:center;
+    gap: 4px 10px;
+    margin-bottom: 4px;
+    width:100%;
+  }
+  @media (max-width: 520px){
+    .stop{
+      grid-template-columns: 20px 1fr;
+      grid-template-areas:
+        "line time"
+        "line card"
+        "line actions";
+      row-gap: 6px;
+    }
+    .stop-time{ grid-area: time; }
+    .stop-line{ grid-area: line; }
+    .stop-card{ grid-area: card; }
+    .stop-actions{ grid-area: actions; }
+    .stop-time input{ text-align:left; width:110px; }
+  }
+  .stop-time input{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 8px;
+    font-family:'Noto Sans TC', sans-serif;
+    font-size: 12.5px;
+    text-align:center;
+    color: var(--ocean-deep);
+    font-weight:700;
+  }
+  .stop-time input::placeholder{ color: #B9C9C8; font-weight:400; }
+
+  .stop-line{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    height:100%;
+    min-height: 54px;
+  }
+  .stop-dot{
+    width:11px; height:11px; border-radius:50%;
+    background: var(--ocean);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px var(--ocean);
+    flex-shrink:0;
+    margin-top: 6px;
+  }
+  .stop-thread{
+    width:2px;
+    flex:1;
+    background: var(--line);
+    margin-top: 2px;
+  }
+  .stop:last-child .stop-thread{ background: transparent; }
+
+  .stop-card{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 8px;
+    min-height: 20px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .stop-card:hover{
+    background: var(--ocean-light);
+    border-color: var(--ocean);
+  }
+  .stop-card .map-pin{
+    flex-shrink:0;
+    width:16px; height:16px;
+    color: var(--coral);
+    opacity: 0.7;
+  }
+  .stop-card:hover .map-pin{ opacity: 1; }
+
+  .stop-actions{ display:flex; gap:4px; }
+  .stop-actions button{
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink-soft);
+    cursor:pointer;
+    font-size: 12px;
+    display:flex; align-items:center; justify-content:center;
+    line-height:1;
+  }
+  .stop-actions button:hover{ background: var(--ocean-light); color: var(--ocean-deep); }
+  .stop-actions button.del:hover{ background: #FBE3DE; color: var(--coral); border-color: var(--coral); }
+
+  footer.note{
+    margin-top: 22px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-title-block">
+      <svg class="shisa" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="48" fill="#E2593F" opacity="0.12"/>
+        <path d="M30 62c0-14 9-24 20-24s20 10 20 24" stroke="#0E4A57" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="38" cy="42" r="4" fill="#0E4A57"/>
+        <circle cx="62" cy="42" r="4" fill="#0E4A57"/>
+        <path d="M40 58q10 8 20 0" stroke="#E2593F" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M28 34c-4-6-2-14 4-16 2 6 0 12-4 16z" fill="#0E4A57"/>
+        <path d="M72 34c4-6 2-14-4-16-2 6 0 12 4 16z" fill="#0E4A57"/>
+      </svg>
+      <div>
+        <p class="eyebrow">TATSUJUI OKINAWA TRIP</p>
+        <h1>達睿沖繩員工旅遊<br>行程規劃器</h1>
+      </div>
+    </div>
+    <div class="hero-sub">
+    點選左側景點加入右側分頁,<br>點景點卡片可開啟 Google 地圖導航,<br>時間欄位可自行輸入。
+    <br>
+    <button class="export-btn" id="exportBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+      匯出給家人看的唯讀版
+    </button>
+  </div>
+  </header>
+
+  <svg class="wave" viewBox="0 0 1200 20" preserveAspectRatio="none">
+    <path d="M0 10 Q 30 0 60 10 T 120 10 T 180 10 T 240 10 T 300 10 T 360 10 T 420 10 T 480 10 T 540 10 T 600 10 T 660 10 T 720 10 T 780 10 T 840 10 T 900 10 T 960 10 T 1020 10 T 1080 10 T 1140 10 T 1200 10"
+      stroke="#1B8A9B" stroke-width="2" fill="none" opacity="0.35"/>
+  </svg>
+
+  <div class="layout">
+
+    <!-- SIDEBAR: 景點按鈕庫 -->
+    <aside class="panel sidebar">
+      <h2>景點按鈕庫</h2>
+      <p class="hint">點一下加入目前選取的分頁</p>
+
+      <div id="regionList"></div>
+
+      <div class="region">
+        <p class="region-label">自訂景點</p>
+        <div class="custom-add">
+          <input id="customInput" type="text" placeholder="輸入景點名稱...">
+          <button id="customAddBtn">加入</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN: tabs + day panel -->
+    <main class="main-panel">
+      <div class="tabs" id="tabs"></div>
+      <section class="day-panel" id="dayPanel"></section>
+      <footer class="note">此頁為前端暫存工具,重新整理頁面資料將會清空,建議規劃完成後截圖或另行記錄。</footer>
+    </main>
+
+  </div>
+</div>
+
+<script>
+  // ---------- Data ----------
+  const REGIONS = [
+    { label: "北部", spots: [
+      "美麗海海洋館","古宇利島","萬座毛","部瀨名海中公園","琉球村","青之洞窟",
+      "花人逢-披薩","古宇利蝦蝦飯","shinmei coffee","see living cafe","satchan soba","嘉福阿古豬火鍋"
+    ]},
+    { label: "中部", spots: [
+      "美國村","泡瀨","泡瀨漁港","plaza house","港川外人住宅",
+      "kiseki 貝出汁沖繩","丸亀製麺(北谷店)","Hanon-厚鬆餅","hoppepan-麵包","A&W Makiminato 牧港","Sandbox Burgers","Kanna Plus","banta cafe","琉球的牛"
+    ]},
+    { label: "那霸市區", spots: [
+      "國際通","沖繩縣立美術館","Sairaiin (Daruma Temple)","DFS免稅百貨",
+      "eibun 沖繩麵","旅の終わりの朝ごはん -早餐","TAKUYOSHI那霸","琉歌","目利きの銀次 新都心本舗","珀塔瑪-沖繩飯糰","風獅爺雞蛋糕","nona"
+    ]},
+    { label: "南部", spots: [
+      "玉泉洞","瀨長島","糸滿漁民食堂","糸滿魚市場","ニッシン楽働館","iias沖繩豐崎","Ashibinaa Outlet","Parco City"
+    ]}
+  ];
+
+  const DAYS = ["週一","週二","週三","週四","週五"];
+  const DAY_EN = ["MON","TUE","WED","THU","FRI"];
+
+  // in-memory state only
+  const state = {
+    active: 0,
+    days: [[], [], [], [], []] // each: {id, name, time}
+  };
+  let uid = 1;
+
+  // ---------- Render sidebar ----------
+  const regionListEl = document.getElementById('regionList');
+  REGIONS.forEach(region => {
+    const block = document.createElement('div');
+    block.className = 'region';
+    const label = document.createElement('p');
+    label.className = 'region-label';
+    label.textContent = region.label;
+    block.appendChild(label);
+    region.spots.forEach(spot => {
+      const btn = document.createElement('button');
+      btn.className = 'spot-btn';
+      btn.innerHTML = `<span class="plus">＋</span><span>${spot}</span>`;
+      btn.addEventListener('click', () => addStop(spot));
+      block.appendChild(btn);
+    });
+    regionListEl.appendChild(block);
+  });
+
+  document.getElementById('customAddBtn').addEventListener('click', addCustom);
+  document.getElementById('customInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addCustom();
+  });
+  function addCustom(){
+    const input = document.getElementById('customInput');
+    const val = input.value.trim();
+    if (!val) return;
+    addStop(val);
+    input.value = '';
+  }
+
+  function addStop(name){
+    state.days[state.active].push({ id: uid++, name, time: "" });
+    renderDayPanel();
+  }
+  function removeStop(id){
+    state.days[state.active] = state.days[state.active].filter(s => s.id !== id);
+    renderDayPanel();
+  }
+  function moveStop(id, dir){
+    const list = state.days[state.active];
+    const idx = list.findIndex(s => s.id === id);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= list.length) return;
+    [list[idx], list[newIdx]] = [list[newIdx], list[idx]];
+    renderDayPanel();
+  }
+  function openMap(name){
+    const query = encodeURIComponent(name + ' 沖縄');
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  }
+
+  function updateTime(id, val){
+    const list = state.days[state.active];
+    const item = list.find(s => s.id === id);
+    if (item) item.time = val;
+  }
+
+  // ---------- Render tabs ----------
+  const tabsEl = document.getElementById('tabs');
+  function renderTabs(){
+    tabsEl.innerHTML = '';
+    DAYS.forEach((label, i) => {
+      const tab = document.createElement('button');
+      tab.className = 'tab' + (i === state.active ? ' active' : '');
+      const count = state.days[i].length;
+      tab.innerHTML = `${label}<span class="day-en">${DAY_EN[i]}</span>${count ? `<span class="count">${count}</span>` : ''}`;
+      tab.addEventListener('click', () => {
+        state.active = i;
+        renderTabs();
+        renderDayPanel();
+      });
+      tabsEl.appendChild(tab);
+    });
+  }
+
+  // ---------- Render day panel ----------
+  const dayPanelEl = document.getElementById('dayPanel');
+  function renderDayPanel(){
+    renderTabs();
+    const list = state.days[state.active];
+    dayPanelEl.innerHTML = '';
+
+    if (list.length === 0){
+      dayPanelEl.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1B8A9B" stroke-width="1.5"><path d="M12 21c-4-4-8-7.5-8-12a8 8 0 0116 0c0 4.5-4 8-8 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <p>${DAYS[state.active]}目前還沒有景點，從左側點選加入吧</p>
+        </div>`;
+      return;
+    }
+
+    const timeline = document.createElement('div');
+    timeline.className = 'timeline';
+
+    list.forEach((stop, idx) => {
+      const row = document.createElement('div');
+      row.className = 'stop';
+      row.innerHTML = `
+        <div class="stop-time">
+          <input type="text" placeholder="時間" value="${stop.time}" data-id="${stop.id}">
+        </div>
+        <div class="stop-line">
+          <div class="stop-dot"></div>
+          <div class="stop-thread"></div>
+        </div>
+        <div class="stop-card" data-act="map" data-id="${stop.id}" title="開啟 Google 地圖導航">
+          <span>${stop.name}</span>
+          <svg class="map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="stop-actions">
+          <button data-act="up" data-id="${stop.id}" title="上移">↑</button>
+          <button data-act="down" data-id="${stop.id}" title="下移">↓</button>
+          <button data-act="del" data-id="${stop.id}" class="del" title="刪除">×</button>
+        </div>
+      `;
+      timeline.appendChild(row);
+    });
+
+    dayPanelEl.appendChild(timeline);
+
+    // bind events
+    timeline.querySelectorAll('.stop-time input').forEach(inp => {
+      inp.addEventListener('input', e => updateTime(Number(e.target.dataset.id), e.target.value));
+    });
+    timeline.querySelectorAll('[data-act="up"]').forEach(b => b.addEventListener('click', e => moveStop(Number(e.target.dataset.id), -1)));
+    timeline.querySelectorAll('[data-act="down"]').forEach(b => b.addEventListener('click', e => moveStop(Number(e.target.dataset.id), 1)));
+    timeline.querySelectorAll('[data-act="del"]').forEach(b => b.addEventListener('click', e => removeStop(Number(e.target.dataset.id))));
+    timeline.querySelectorAll('.stop-card[data-act="map"]').forEach(card => card.addEventListener('click', () => {
+      const id = Number(card.dataset.id);
+      const stop = state.days[state.active].find(s => s.id === id);
+      if (stop) openMap(stop.name);
+    }));
+  }
+
+  // ---------- Export read-only version ----------
+  function exportReadOnly(){
+    const hasAny = state.days.some(d => d.length > 0);
+    if (!hasAny){
+      alert('目前還沒有排入任何景點，先安排一些行程再匯出唷！');
+      return;
+    }
+
+    const dayBlocks = state.days.map((list, i) => {
+      const stopsHtml = list.length === 0
+        ? `<p class="ro-empty">${DAYS[i]}沒有安排行程</p>`
+        : list.map(s => `
+            <div class="ro-stop">
+              <div class="ro-time">${s.time ? s.time : '－'}</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <div class="ro-card" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name + ' 沖縄')}','_blank')">
+                <span>${s.name}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+            </div>`).join('');
+      return `<section class="ro-day" id="ro-day-${i}" style="display:${i===0?'block':'none'}">${stopsHtml}</section>`;
+    }).join('');
+
+    const tabBtns = DAYS.map((label, i) => `<button class="ro-tab${i===0?' active':''}" data-i="${i}" onclick="roShowDay(${i})">${label}<span class="ro-en">${DAY_EN[i]}</span></button>`).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>達睿沖繩員工旅遊・行程表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#F6F1E4; --surface:#FFFFFF; --ocean-deep:#0E4A57; --ocean:#1B8A9B; --ocean-light:#CDE8E8; --coral:#E2593F; --ink:#1D2B2C; --ink-soft:#5B6B69; --line:#DCD2B8; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Noto Sans TC',sans-serif; padding:28px 16px 60px; }
+  .wrap{ max-width:720px; margin:0 auto; }
+  h1{ font-family:'Noto Serif TC',serif; font-weight:900; font-size:26px; color:var(--ocean-deep); margin:0 0 4px; }
+  .sub{ font-size:12.5px; color:var(--ink-soft); margin:0 0 20px; }
+  .ro-tabs{ display:flex; gap:4px; overflow-x:auto; border-bottom:2px solid var(--line); margin-bottom:18px; }
+  .ro-tab{ font-family:'Noto Serif TC',serif; font-weight:700; font-size:14px; padding:9px 16px 11px; background:none; border:none; color:var(--ink-soft); cursor:pointer; white-space:nowrap; position:relative; top:2px; }
+  .ro-tab .ro-en{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:400; font-size:9px; letter-spacing:1px; }
+  .ro-tab.active{ color:var(--ocean-deep); border-bottom:3px solid var(--coral); }
+  .ro-day{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; }
+  .ro-empty{ text-align:center; color:var(--ink-soft); padding:30px 0; font-size:13.5px; margin:0; }
+  .ro-stop{ display:grid; grid-template-columns:66px 20px 1fr; gap:4px 10px; align-items:center; margin-bottom:4px; }
+  .ro-time{ font-size:12.5px; font-weight:700; color:var(--ocean-deep); text-align:center; }
+  .ro-dotcol{ display:flex; flex-direction:column; align-items:center; height:100%; min-height:50px; }
+  .ro-dot{ width:11px; height:11px; border-radius:50%; background:var(--ocean); border:2px solid #fff; box-shadow:0 0 0 2px var(--ocean); margin-top:6px; }
+  .ro-thread{ width:2px; flex:1; background:var(--line); margin-top:2px; }
+  .ro-stop:last-child .ro-thread{ background:transparent; }
+  .ro-card{ background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14px; font-weight:500; display:flex; align-items:center; justify-content:space-between; gap:8px; cursor:pointer; }
+  .ro-card:hover{ background:var(--ocean-light); border-color:var(--ocean); }
+  .ro-card svg{ width:15px; height:15px; color:var(--coral); flex-shrink:0; opacity:.8; }
+  footer{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>達睿沖繩員工旅遊・行程表</h1>
+  <p class="sub">點景點卡片可直接開啟 Google 地圖導航</p>
+  <div class="ro-tabs">${tabBtns}</div>
+  ${dayBlocks}
+  <footer>此為唯讀行程表，如需調整請聯繫行程規劃人員</footer>
+</div>
+<script>
+  function roShowDay(i){
+    document.querySelectorAll('.ro-day').forEach((el, idx) => el.style.display = idx === i ? 'block' : 'none');
+    document.querySelectorAll('.ro-tab').forEach((el, idx) => el.classList.toggle('active', idx === i));
+  }
+<\/script>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '達睿沖繩員工旅遊行程表_唯讀版.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', exportReadOnly);
+
+  renderTabs();
+  renderDayPanel();
+</script>
+</body>
+</html>

@@ -6,8 +6,6 @@
 <title>達睿沖繩員工旅遊・行程規劃器</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
     --bg: #EDE3C4;
@@ -287,28 +285,15 @@
   }
   .map-box-title svg{ width:15px; height:15px; color: var(--coral); flex-shrink:0; }
   .map-frame-wrap{
-    width:100%; height: 380px;
+    width:100%; height: 420px;
     border-radius: 10px;
     overflow:hidden;
     border: 1px solid var(--line);
     background: var(--bg);
-    position: relative;
   }
-  #leafletMapContainer{ position:absolute; inset:0; width:100%; height:100%; }
-  .map-overlay{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    background: var(--bg);
-    z-index: 500;
-    transition: opacity .2s ease;
-    text-align:center;
-    padding: 0 20px;
-  }
-  .map-overlay.hidden{ opacity:0; pointer-events:none; }
-  .map-empty{ font-size:12.5px; color: var(--ink-soft); margin:0; line-height:1.6; }
-  .map-empty.error{ color: var(--coral); font-weight:700; }
+  .map-frame-wrap iframe{ width:100%; height:100%; border:0; display:block; }
   @media (max-width: 560px){
-    .map-frame-wrap{ height: 300px; }
+    .map-frame-wrap{ height: 320px; }
   }
 
   .empty-state{
@@ -441,7 +426,7 @@
       </div>
     </div>
     <div class="hero-sub">
-    點選左側景點加入右側分頁,<br>地圖會自動顯示該天路線,<br>時間欄位可自行輸入。
+    點選左側景點加入右側分頁,<br>地圖可用右上角圖層切換每天,<br>時間欄位可自行輸入。
     <br>
     <button class="export-btn" id="exportBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
@@ -481,13 +466,10 @@
       <div class="map-box" id="mapBox">
         <p class="map-box-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          地圖預覽 — 會隨目前分頁自動更新路線
+          達睿沖繩地圖（可用地圖右上角圖層選單切換每天景點）
         </p>
         <div class="map-frame-wrap">
-          <div id="leafletMapContainer"></div>
-          <div class="map-overlay" id="mapOverlay">
-            <p class="map-empty">加入景點後,這裡會顯示地圖跟路線</p>
-          </div>
+          <iframe src="https://www.google.com/maps/d/embed?mid=1nUukCtrtiBM6l6IDU9vJPDJPAjphFNo" loading="lazy"></iframe>
         </div>
       </div>
 
@@ -501,98 +483,85 @@
   // ---------- Data ----------
   const REGIONS = [
     { label: "北部", spots: [
-      "美麗海海洋館","古宇利島","萬座毛","部瀨名海中公園","琉球村","青之洞窟",
-      "花人逢-披薩【可素食】","古宇利蝦蝦飯","shinmei coffee","see living cafe","satchan soba","嘉福阿古豬火鍋",
+      "美麗海海洋館","古宇利島","古宇利大橋","萬座毛","部瀨名海中公園","琉球村","青之洞窟",
+      "花人逢-披薩【可素食】","古宇利蝦蝦飯","shinmei coffee","see living cafe","satchan soba","嘉福阿古豬火鍋","Ark Cafe",
       "Vegan Cafe Niceness【素食】","Cookhal【素食友善】"
     ]},
     { label: "中部", spots: [
       "美國村","泡瀨","泡瀨漁港","plaza house","港川外人住宅",
       "kiseki 貝出汁沖繩","丸亀製麺(北谷店)","Hanon-厚鬆餅【素食友善】","hoppepan-麵包","A&W Makiminato 牧港","Sandbox Burgers","Kanna Plus【素食友善】","banta cafe","琉球的牛",
-      "Vegeful Lunch Cafe【素食自助餐】"
+      "Vegeful Lunch Cafe【素食自助餐】","プロマート業務用食品スーパー 北谷店","San-A Chatan Hamagawa","摩斯漢堡 北谷店","暖暮 北谷砂邊店"
     ]},
     { label: "那霸市區", spots: [
       "國際通","沖繩縣立美術館","Sairaiin (Daruma Temple)","DFS免稅百貨",
       "eibun 沖繩麵","旅の終わりの朝ごはん -早餐","TAKUYOSHI那霸","琉歌","目利きの銀次 新都心本舗","珀塔瑪-沖繩飯糰【素食友善】","風獅爺雞蛋糕","nona","ちゅらさん6",
-      "浮島ガーデン【素食】","金壺食堂【素食】"
+      "浮島ガーデン【素食】","金壺食堂【素食】","とんかつ小やじ那覇店","波上宮","Nakazaya","1-chōme-13-9 Makishi","うみ街"
     ]},
     { label: "南部", spots: [
       "玉泉洞【有素食】","瀨長島","糸滿漁民食堂","糸滿魚市場","ニッシン楽働館","iias沖繩豐崎","Ashibinaa Outlet","Parco City",
       "山之茶屋・樂水【素食】"
     ]},
     { label: "交通／住宿", spots: [
-      "那霸機場","民宿（CHATAN OCEAN Villa）"
+      "那霸機場","民宿（CHATAN OCEAN Villa）","租車還車"
     ]}
   ];
-
-  // 景點座標對照表（先查好、寫死進來，地圖顯示不再依賴即時查詢）
-  const COORDS = {
-    "美麗海海洋館": [26.6939, 127.8779],
-    "古宇利島": [26.7042, 128.0206],
-    "萬座毛": [26.5039, 127.8453],
-    "部瀨名海中公園": [26.6642, 127.9636],
-    "琉球村": [26.5217, 127.9139],
-    "青之洞窟": [26.5031, 127.8377],
-    "花人逢-披薩【可素食】": [26.6725, 127.9089],
-    "古宇利蝦蝦飯": [26.7042, 128.0206],
-    "shinmei coffee": [26.6875, 128.0334],
-    "see living cafe": [26.5908, 127.9767],
-    "satchan soba": [26.5908, 127.9767],
-    "嘉福阿古豬火鍋": [26.5039, 127.8453],
-    "美國村": [26.3153, 127.7561],
-    "泡瀨": [26.3389, 127.8354],
-    "泡瀨漁港": [26.3389, 127.8354],
-    "plaza house": [26.3389, 127.8129],
-    "港川外人住宅": [26.2956, 127.7826],
-    "kiseki 貝出汁沖繩": [26.3153, 127.7561],
-    "丸亀製麺(北谷店)": [26.3153, 127.7561],
-    "Hanon-厚鬆餅【素食友善】": [26.3153, 127.7561],
-    "hoppepan-麵包": [26.2478, 127.7203],
-    "A&W Makiminato 牧港": [26.2478, 127.7203],
-    "Sandbox Burgers": [26.3153, 127.7561],
-    "Kanna Plus【素食友善】": [26.3232, 127.7597],
-    "banta cafe": [26.3956, 127.7419],
-    "琉球的牛": [26.3153, 127.7561],
-    "國際通": [26.2141, 127.6892],
-    "沖繩縣立美術館": [26.2231, 127.6795],
-    "Sairaiin (Daruma Temple)": [26.2172, 127.7189],
-    "DFS免稅百貨": [26.2225, 127.6798],
-    "eibun 沖繩麵": [26.2153, 127.6825],
-    "旅の終わりの朝ごはん -早餐": [26.2117, 127.6892],
-    "TAKUYOSHI那霸": [26.2141, 127.6892],
-    "琉歌": [26.2141, 127.6900],
-    "目利きの銀次 新都心本舗": [26.2231, 127.6795],
-    "珀塔瑪-沖繩飯糰【素食友善】": [26.2153, 127.6825],
-    "風獅爺雞蛋糕": [26.2145, 127.6870],
-    "nona": [26.2280, 127.6773],
-    "ちゅらさん6": [26.2137, 127.6790],
-    "玉泉洞【有素食】": [26.1611, 127.7423],
-    "瀨長島": [26.1875, 127.6459],
-    "糸滿漁民食堂": [26.1247, 127.6683],
-    "糸滿魚市場": [26.1247, 127.6683],
-    "ニッシン楽働館": [26.1247, 127.6683],
-    "iias沖繩豐崎": [26.1611, 127.6551],
-    "Ashibinaa Outlet": [26.1656, 127.6572],
-    "Parco City": [26.1611, 127.6551],
-    "那霸機場": [26.1958, 127.6459],
-    "民宿（CHATAN OCEAN Villa）": [26.3153, 127.7561],
-    "Vegan Cafe Niceness【素食】": [26.5908, 127.9767],
-    "Cookhal【素食友善】": [26.6014, 127.9908],
-    "Vegeful Lunch Cafe【素食自助餐】": [26.3175, 127.7589],
-    "浮島ガーデン【素食】": [26.2141, 127.6900],
-    "金壺食堂【素食】": [26.2153, 127.6825],
-    "山之茶屋・樂水【素食】": [26.1428, 127.7715]
-  };
-
 
   const DAYS = ["週一","週二","週三","週四","週五"];
   const DAY_EN = ["10/26","10/27","10/28","10/29","10/30"];
 
-  // in-memory state only
+  // in-memory state only — 已從您的我的地圖 KML 同步匯入目前排定的行程
+  let uid = 1;
+  function mkStop(name, time){ return { id: uid++, name, time: time || "" }; }
+
   const state = {
     active: 0,
-    days: [[], [], [], [], []] // each: {id, name, time}
+    days: [
+      [ // 週一 10/26
+        mkStop("CHATAN OCEAN Villa", ""),
+        mkStop("1-chōme-13-9 Makishi", "18:30"),
+        mkStop("プロマート業務用食品スーパー 北谷店", "")
+      ],
+      [ // 週二 10/27
+        mkStop("A&W Makiminato", "09:30"),
+        mkStop("沖繩縣立博物館・美術館", ""),
+        mkStop("DFS Okinawa Naha", ""),
+        mkStop("國際通", ""),
+        mkStop("とんかつ小やじ那覇店", ""),
+        mkStop("瀨長島 Umikaji Terrace", ""),
+        mkStop("ニッシン楽働館", ""),
+        mkStop("iias沖繩豐崎", "19:00")
+      ],
+      [ // 週三 10/28
+        mkStop("うみ街", "17:00"),
+        mkStop("ちゅらさん6沖縄", "20:00")
+      ],
+      [ // 週四 10/29
+        mkStop("沖縄美ら海水族館", "09:30"),
+        mkStop("古宇利蝦蝦飯", ""),
+        mkStop("モリンガの木", ""),
+        mkStop("古宇利大橋", ""),
+        mkStop("花人逢 Pizza", ""),
+        mkStop("Ark Cafe", ""),
+        mkStop("萬座毛", ""),
+        mkStop("暖暮 北谷砂邊店", ""),
+        mkStop("美國村", "")
+      ],
+      [ // 週五 10/30
+        mkStop("摩斯漢堡 北谷店", ""),
+        mkStop("港川外人住宅", ""),
+        mkStop("hoppepan", ""),
+        mkStop("達摩寺", ""),
+        mkStop("玉泉洞", ""),
+        mkStop("糸滿魚市場", ""),
+        mkStop("糸滿漁民食堂", ""),
+        mkStop("沖縄 ASHIBINAA Outlet", ""),
+        mkStop("波上宮", ""),
+        mkStop("Nakazaya", ""),
+        mkStop("租車還車", "17:30"),
+        mkStop("那霸機場", "")
+      ]
+    ]
   };
-  let uid = 1;
 
   // ---------- Render sidebar ----------
   const regionListEl = document.getElementById('regionList');
@@ -659,94 +628,6 @@
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   }
 
-  // ---------- Live map preview (Leaflet + OpenStreetMap, no API key) ----------
-  // 已知景點座標優先查表；只有自訂景點（不在 COORDS 裡）才即時查詢
-  const geocodeCache = {};
-  let leafletMap = null;
-  let markerLayer = null;
-  let mapRequestToken = 0;
-  const mapOverlayEl = document.getElementById('mapOverlay');
-
-  function showMapMessage(text, isError){
-    mapOverlayEl.innerHTML = `<p class="map-empty${isError ? ' error' : ''}">${text}</p>`;
-    mapOverlayEl.classList.remove('hidden');
-  }
-
-  function initLeafletMap(){
-    if (leafletMap) return true;
-    if (typeof L === 'undefined'){
-      showMapMessage('地圖元件載入失敗，可能是網路封鎖了 unpkg.com，請確認網路連線後重新整理頁面。', true);
-      return false;
-    }
-    try{
-      leafletMap = L.map('leafletMapContainer').setView([26.35, 127.9], 10);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
-      }).addTo(leafletMap);
-      markerLayer = L.layerGroup().addTo(leafletMap);
-      return true;
-    }catch(err){
-      console.error('Leaflet init failed:', err);
-      showMapMessage('地圖初始化失敗：' + err.message, true);
-      return false;
-    }
-  }
-
-  async function resolveLocation(name){
-    if (COORDS[name]) return { lat: COORDS[name][0], lon: COORDS[name][1] };
-    if (geocodeCache[name]) return geocodeCache[name];
-    try{
-      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(name + ' 沖縄 Okinawa')}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (data && data.length > 0){
-        const loc = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-        geocodeCache[name] = loc;
-        return loc;
-      }
-    }catch(e){ console.error('geocode failed for', name, e); }
-    return null;
-  }
-
-  async function updateMapPreview(){
-    const list = state.days[state.active];
-    const token = ++mapRequestToken;
-
-    if (!list || list.length === 0){
-      if (markerLayer) markerLayer.clearLayers();
-      showMapMessage('加入景點後,這裡會顯示地圖跟路線', false);
-      return;
-    }
-
-    const ok = initLeafletMap();
-    if (!ok) return;
-
-    showMapMessage('地圖載入中...', false);
-
-    const locs = await Promise.all(list.map(s => resolveLocation(s.name)));
-    if (token !== mapRequestToken) return;
-
-    markerLayer.clearLayers();
-    const pts = [];
-    locs.forEach((loc, idx) => {
-      if (loc){
-        pts.push([loc.lat, loc.lon]);
-        L.marker([loc.lat, loc.lon]).addTo(markerLayer).bindPopup(`${idx + 1}. ${list[idx].name}`);
-      }
-    });
-    if (pts.length > 1){
-      L.polyline(pts, { color: '#17AEC9', weight: 3, opacity: 0.7 }).addTo(markerLayer);
-    }
-    if (pts.length > 0){
-      leafletMap.fitBounds(pts, { padding: [30, 30] });
-      mapOverlayEl.classList.add('hidden');
-      setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 60);
-    } else {
-      showMapMessage('找不到這幾個景點的地圖位置，建議點景點卡片直接用 Google 地圖搜尋。', true);
-    }
-  }
-
   function updateTime(id, val){
     const list = state.days[state.active];
     const item = list.find(s => s.id === id);
@@ -784,7 +665,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="#17AEC9" stroke-width="1.5"><path d="M12 21c-4-4-8-7.5-8-12a8 8 0 0116 0c0 4.5-4 8-8 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
           <p>${DAYS[state.active]}目前還沒有景點，從左側點選加入吧</p>
         </div>`;
-      updateMapPreview();
       return;
     }
 
@@ -829,8 +709,6 @@
       const stop = state.days[state.active].find(s => s.id === id);
       if (stop) openMap(stop.name);
     }));
-
-    updateMapPreview();
   }
 
   // ---------- Export read-only version ----------
@@ -850,9 +728,6 @@
       return;
     }
 
-    const routesJson = JSON.stringify(state.days.map(list => list.map(s => s.name))).replace(/</g, '\\u003c');
-    const coordsJson = JSON.stringify(COORDS).replace(/</g, '\\u003c');
-
     const dayBlocks = state.days.map((list, i) => {
       const stopsHtml = list.length === 0
         ? `<p class="ro-empty">${escapeHtml(DAYS[i])}沒有安排行程</p>`
@@ -865,8 +740,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
               </a>
             </div>`).join('');
-      const mapHtml = list.length === 0 ? '' : `<div class="ro-map" id="ro-map-${i}"></div>`;
-      return `<section class="ro-day" id="ro-day-${i}">${mapHtml}${stopsHtml}</section>`;
+      return `<section class="ro-day" id="ro-day-${i}">${stopsHtml}</section>`;
     }).join('');
 
     const radios = DAYS.map((label, i) => `<input type="radio" name="roday" id="roday${i}" class="ro-radio"${i===0?' checked':''}>`).join('');
@@ -883,8 +757,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>達睿沖繩員工旅遊・行程表</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
 <style>
   :root{ --bg:#EDE3C4; --surface:#FFFFFF; --ocean-deep:#0A5C74; --ocean:#17AEC9; --ocean-light:#B9EAF0; --coral:#F2A930; --ink:#123138; --ink-soft:#4C6E74; --line:#DACB9C; }
   *{ box-sizing:border-box; -webkit-tap-highlight-color: rgba(27,138,155,0.25); }
@@ -892,9 +764,10 @@
   .wrap{ max-width:720px; margin:0 auto; }
   h1{ font-family:'Noto Serif TC',serif; font-weight:900; font-size:24px; color:var(--ocean-deep); margin:0 0 4px; }
   .sub{ font-size:12.5px; color:var(--ink-soft); margin:0 0 18px; }
+  .ro-map-box{ width:100%; height:320px; border-radius:14px; overflow:hidden; border:1px solid var(--line); margin-bottom:18px; background:var(--bg); }
+  .ro-map-box iframe{ width:100%; height:100%; border:0; display:block; }
   .ro-radio{ position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
   .ro-day{ display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; }
-  .ro-map{ width:100%; height:220px; border-radius:10px; overflow:hidden; border:1px solid var(--line); margin-bottom:16px; background:var(--bg); }
   .ro-empty{ text-align:center; color:var(--ink-soft); padding:30px 0; font-size:13.5px; margin:0; }
   .ro-stop{ display:grid; grid-template-columns:60px 20px 1fr; gap:4px 10px; align-items:center; margin-bottom:4px; }
   .ro-time{ font-size:12.5px; font-weight:700; color:var(--ocean-deep); text-align:center; }
@@ -928,6 +801,10 @@
   <h1>達睿沖繩員工旅遊・行程表</h1>
   <p class="sub">2026/10/26－10/30・點景點卡片可直接開啟 Google 地圖導航</p>
 
+  <div class="ro-map-box">
+    <iframe src="https://www.google.com/maps/d/embed?mid=1nUukCtrtiBM6l6IDU9vJPDJPAjphFNo" loading="lazy"></iframe>
+  </div>
+
   ${radios}
   <div class="ro-content">
     ${dayBlocks}
@@ -939,75 +816,6 @@
 
   <footer>此為唯讀行程表，如需調整請聯繫行程規劃人員</footer>
 </div>
-<script>
-  var ROUTES = ${routesJson};
-  var COORDS = ${coordsJson};
-  var mapEntries = {};
-  var geoCache = {};
-
-  function resolveLocation(name){
-    if (COORDS[name]) return Promise.resolve({ lat: COORDS[name][0], lon: COORDS[name][1] });
-    if (geoCache[name]) return Promise.resolve(geoCache[name]);
-    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(name + ' 沖縄 Okinawa');
-    return fetch(url).then(function(r){ return r.json(); }).then(function(data){
-      if (data && data.length){
-        var loc = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-        geoCache[name] = loc;
-        return loc;
-      }
-      return null;
-    }).catch(function(err){ console.error('geocode failed', err); return null; });
-  }
-
-  function renderDayMap(i){
-    if (typeof L === 'undefined') return;
-    var names = ROUTES[i];
-    if (!names || names.length === 0) return;
-    var containerId = 'ro-map-' + i;
-    var el = document.getElementById(containerId);
-    if (!el) return;
-
-    if (!mapEntries[i]){
-      try{
-        var m = L.map(containerId).setView([26.35, 127.9], 10);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
-        }).addTo(m);
-        var layer = L.layerGroup().addTo(m);
-        mapEntries[i] = { map: m, layer: layer, done: false };
-      }catch(err){ console.error('map init failed', err); return; }
-    }
-    var entry = mapEntries[i];
-    setTimeout(function(){ if (entry.map) entry.map.invalidateSize(); }, 60);
-    if (entry.done) return;
-    entry.done = true;
-
-    Promise.all(names.map(resolveLocation)).then(function(locs){
-      entry.layer.clearLayers();
-      var pts = [];
-      locs.forEach(function(loc, idx){
-        if (loc){
-          pts.push([loc.lat, loc.lon]);
-          L.marker([loc.lat, loc.lon]).addTo(entry.layer).bindPopup((idx + 1) + '. ' + names[idx]);
-        }
-      });
-      if (pts.length > 1){
-        L.polyline(pts, { color: '#17AEC9', weight: 3, opacity: 0.7 }).addTo(entry.layer);
-      }
-      if (pts.length > 0){
-        entry.map.fitBounds(pts, { padding: [30, 30] });
-      }
-    });
-  }
-
-  renderDayMap(0);
-  for (var d = 0; d < ROUTES.length; d++){
-    (function(idx){
-      var radio = document.getElementById('roday' + idx);
-      if (radio) radio.addEventListener('change', function(){ renderDayMap(idx); });
-    })(d);
-  }
-<\/script>
 </body>
 </html>`;
 

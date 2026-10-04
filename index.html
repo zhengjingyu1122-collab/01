@@ -3,758 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>達睿沖繩員工旅遊・行程規劃器</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #EDE3C4;
-    --surface: #FFFFFF;
-    --ocean-deep: #0A5C74;
-    --ocean: #17AEC9;
-    --ocean-light: #B9EAF0;
-    --coral: #F2A930;
-    --ink: #123138;
-    --ink-soft: #4C6E74;
-    --line: #DACB9C;
-    --leaf: #6E9271;
-    --radius: 14px;
-  }
-
-  * { box-sizing: border-box; }
-  html{ width:100%; overflow-x:hidden; }
-
-  body{
-    margin:0;
-    width:100%;
-    overflow-x:hidden;
-    background:
-      linear-gradient(180deg, #BFE7F0 0%, #EDE3C4 38%),
-      radial-gradient(circle at 92% 6%, rgba(23,174,201,0.16), transparent 40%),
-      var(--bg);
-    color: var(--ink);
-    font-family: 'Noto Sans TC', sans-serif;
-    padding: 24px 16px 60px;
-  }
-
-  .wrap{ max-width: 1180px; margin: 0 auto; }
-
-  /* ---------- Header ---------- */
-  header.hero{
-    display:flex;
-    flex-wrap: wrap;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap: 16px;
-    padding-bottom: 18px;
-    margin-bottom: 22px;
-    border-bottom: 2px solid var(--ocean-deep);
-    position: relative;
-  }
-  .hero-title-block{ display:flex; align-items:center; gap:14px; min-width:0; }
-  .eyebrow{
-    font-size: 12.5px;
-    letter-spacing: 3px;
-    color: var(--coral);
-    font-weight:700;
-    margin: 0 0 6px;
-  }
-  h1{
-    font-family:'Noto Serif TC', serif;
-    font-weight:900;
-    font-size: clamp(22px, 5vw, 34px);
-    margin: 0;
-    color: var(--ocean-deep);
-    line-height:1.3;
-  }
-  .hero-sub{
-    font-size: 13px;
-    color: var(--ink-soft);
-    text-align:right;
-    max-width: 260px;
-    line-height:1.6;
-  }
-  @media (max-width: 560px){
-    .hero-sub{ text-align:left; max-width:100%; }
-  }
-
-  .export-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    background: var(--ocean-deep);
-    color:#fff;
-    border:none;
-    border-radius: 10px;
-    padding: 10px 16px;
-    font-family:'Noto Sans TC', sans-serif;
-    font-size: 13px;
-    font-weight:700;
-    cursor:pointer;
-    white-space: nowrap;
-    margin-top: 8px;
-  }
-  .export-btn:hover{ background: var(--ocean); }
-  .export-btn svg{ width:15px; height:15px; }
-  .wave{ display:block; width:100%; height:14px; margin: -2px 0 24px; }
-
-  /* ---------- Layout ---------- */
-  .layout{
-    display:grid;
-    grid-template-columns: 280px 1fr;
-    gap: 22px;
-    align-items:start;
-    width:100%;
-  }
-  @media (max-width: 860px){
-    .layout{ grid-template-columns: 1fr; }
-  }
-
-  /* ---------- Sidebar: 景點按鈕庫 ---------- */
-  .panel{
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    box-shadow: 0 2px 10px rgba(14,74,87,0.05);
-  }
-  .sidebar{ padding: 20px 18px; position: sticky; top: 20px; max-width:100%; }
-  @media (max-width: 860px){
-    .sidebar{ position: static; }
-  }
-  .sidebar h2{
-    font-family:'Noto Serif TC', serif;
-    font-size: 16px;
-    margin: 0 0 4px;
-    color: var(--ocean-deep);
-  }
-  .sidebar .hint{
-    font-size:12px; color: var(--ink-soft); margin: 0 0 16px;
-  }
-  .region{ margin-bottom: 16px; }
-  .region-label{
-    font-size: 11.5px;
-    font-weight:700;
-    letter-spacing: 1.5px;
-    color: var(--ocean);
-    margin: 0 0 8px;
-    display:flex; align-items:center; gap:6px;
-  }
-  .region-label::before{
-    content:"";
-    width:8px; height:8px; border-radius:50%;
-    background: var(--ocean);
-    display:inline-block;
-  }
-  .spot-btn{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    width:100%;
-    text-align:left;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 9px 12px;
-    font-family:'Noto Sans TC', sans-serif;
-    font-size: 13.5px;
-    color: var(--ink);
-    cursor:pointer;
-    margin-bottom: 7px;
-    transition: all .15s ease;
-  }
-  .spot-btn:hover{
-    background: var(--ocean-light);
-    border-color: var(--ocean);
-    transform: translateX(2px);
-  }
-  .spot-btn:active{ transform: translateX(2px) scale(.98); }
-  .spot-btn .plus{
-    color: var(--coral); font-weight:700; font-size:15px; flex-shrink:0;
-  }
-  .spot-btn-label{ flex:1; min-width:0; }
-  .spot-btn-map{
-    flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    width:24px; height:24px;
-    border-radius: 6px;
-    color: var(--coral);
-    opacity: 0.6;
-  }
-  .spot-btn-map svg{ width:15px; height:15px; }
-  .spot-btn-map:hover{ opacity:1; background: rgba(226,89,63,0.12); }
-
-  .custom-add{
-    margin-top: 6px;
-    display:flex;
-    gap:6px;
-  }
-  .custom-add input{
-    flex:1;
-    min-width:0;
-    border:1px solid var(--line);
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-family:'Noto Sans TC', sans-serif;
-    font-size:13px;
-  }
-  .custom-add button{
-    background: var(--ocean-deep);
-    color:#fff;
-    border:none;
-    border-radius:8px;
-    padding: 0 14px;
-    font-weight:700;
-    cursor:pointer;
-    font-size:13px;
-  }
-  .custom-add button:hover{ background: var(--ocean); }
-
-  /* ---------- Main: tabs + timeline ---------- */
-  .main-panel{ padding: 4px 0 0; }
-
-  .tabs{
-    display:flex;
-    gap: 4px;
-    margin-bottom: 18px;
-    border-bottom: 2px solid var(--line);
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-  }
-  .tab{
-    font-family:'Noto Serif TC', serif;
-    font-weight:700;
-    font-size: 15px;
-    padding: 10px 16px 12px;
-    background: transparent;
-    border: none;
-    cursor:pointer;
-    color: var(--ink-soft);
-    position:relative;
-    top: 2px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .tab .day-en{
-    display:block;
-    font-family:'Noto Sans TC', sans-serif;
-    font-weight:400;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: var(--ink-soft);
-    margin-top: 2px;
-  }
-  .tab.active{
-    color: var(--ocean-deep);
-    border-bottom: 3px solid var(--coral);
-  }
-  .tab .count{
-    display:inline-block;
-    min-width:16px;
-    padding: 0 5px;
-    margin-left:6px;
-    background: var(--ocean-light);
-    color: var(--ocean-deep);
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight:700;
-  }
-  .tab.active .count{ background: var(--coral); color:#fff; }
-
-  .day-panel{
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    padding: 22px 24px 26px;
-    min-height: 340px;
-    box-shadow: 0 2px 10px rgba(14,74,87,0.05);
-  }
-
-  .map-box{
-    margin-top: 16px;
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    padding: 16px 16px 18px;
-    box-shadow: 0 2px 10px rgba(14,74,87,0.05);
-  }
-  .map-box-title{
-    display:flex; align-items:center; gap:6px;
-    font-size: 12.5px; font-weight:700; color: var(--ocean-deep);
-    margin: 0 0 10px;
-  }
-  .map-box-title svg{ width:15px; height:15px; color: var(--coral); flex-shrink:0; }
-  .map-frame-wrap{
-    width:100%; height: 420px;
-    border-radius: 10px;
-    overflow:hidden;
-    border: 1px solid var(--line);
-    background: var(--bg);
-  }
-  .map-frame-wrap iframe{ width:100%; height:100%; border:0; display:block; }
-  @media (max-width: 560px){
-    .map-frame-wrap{ height: 320px; }
-  }
-
-  .empty-state{
-    text-align:center;
-    padding: 60px 20px;
-    color: var(--ink-soft);
-  }
-  .empty-state svg{ width:56px; height:56px; margin-bottom: 12px; opacity:.5; }
-  .empty-state p{ font-size: 13.5px; margin:0; }
-
-  /* timeline */
-  .timeline{ position:relative; padding-left: 6px; width:100%; }
-  .stop{
-    display:grid;
-    grid-template-columns: 84px 20px 1fr auto;
-    align-items:center;
-    gap: 4px 10px;
-    margin-bottom: 4px;
-    width:100%;
-  }
-  @media (max-width: 520px){
-    .stop{
-      grid-template-columns: 20px 1fr;
-      grid-template-areas:
-        "line time"
-        "line card"
-        "line actions";
-      row-gap: 6px;
-    }
-    .stop-time{ grid-area: time; }
-    .stop-line{ grid-area: line; }
-    .stop-card{ grid-area: card; }
-    .stop-actions{ grid-area: actions; }
-    .stop-time input{ text-align:left; width:110px; }
-  }
-  .stop-time input{
-    width:100%;
-    border:1px solid var(--line);
-    border-radius: 8px;
-    padding: 8px 8px;
-    font-family:'Noto Sans TC', sans-serif;
-    font-size: 12.5px;
-    text-align:center;
-    color: var(--ocean-deep);
-    font-weight:700;
-  }
-  .stop-time input::placeholder{ color: #B9C9C8; font-weight:400; }
-
-  .stop-line{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    height:100%;
-    min-height: 54px;
-  }
-  .stop-dot{
-    width:11px; height:11px; border-radius:50%;
-    background: var(--ocean);
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px var(--ocean);
-    flex-shrink:0;
-    margin-top: 6px;
-  }
-  .stop-thread{
-    width:2px;
-    flex:1;
-    background: var(--line);
-    margin-top: 2px;
-  }
-  .stop:last-child .stop-thread{ background: transparent; }
-
-  .stop-card{
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 14px;
-    font-weight:500;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap: 8px;
-    min-height: 20px;
-    cursor: pointer;
-    transition: all .15s ease;
-  }
-  .stop-card:hover{
-    background: var(--ocean-light);
-    border-color: var(--ocean);
-  }
-  .stop-card .map-pin{
-    flex-shrink:0;
-    width:16px; height:16px;
-    color: var(--coral);
-    opacity: 0.7;
-  }
-  .stop-card:hover .map-pin{ opacity: 1; }
-
-  .stop-actions{ display:flex; gap:4px; }
-  .stop-actions button{
-    width: 26px; height: 26px;
-    border-radius: 7px;
-    border: 1px solid var(--line);
-    background: #fff;
-    color: var(--ink-soft);
-    cursor:pointer;
-    font-size: 12px;
-    display:flex; align-items:center; justify-content:center;
-    line-height:1;
-  }
-  .stop-actions button:hover{ background: var(--ocean-light); color: var(--ocean-deep); }
-  .stop-actions button.del:hover{ background: #FBE3DE; color: var(--coral); border-color: var(--coral); }
-
-  footer.note{
-    margin-top: 22px;
-    font-size: 12px;
-    color: var(--ink-soft);
-    text-align:center;
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <header class="hero">
-    <div class="hero-title-block">
-      <div>
-        <p class="eyebrow">DARAY OKINAWA TRIP・2026/10/26－10/30</p>
-        <h1>達睿沖繩員工旅遊<br>行程規劃器</h1>
-      </div>
-    </div>
-    <div class="hero-sub">
-    點選左側景點加入右側分頁,<br>地圖可用右上角圖層切換每天,<br>時間欄位可自行輸入。
-    <br>
-    <button class="export-btn" id="exportBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
-      匯出給家人看的唯讀版
-    </button>
-  </div>
-  </header>
-
-  <svg class="wave" viewBox="0 0 1200 20" preserveAspectRatio="none">
-    <path d="M0 10 Q 30 0 60 10 T 120 10 T 180 10 T 240 10 T 300 10 T 360 10 T 420 10 T 480 10 T 540 10 T 600 10 T 660 10 T 720 10 T 780 10 T 840 10 T 900 10 T 960 10 T 1020 10 T 1080 10 T 1140 10 T 1200 10"
-      stroke="#17AEC9" stroke-width="2" fill="none" opacity="0.35"/>
-  </svg>
-
-  <div class="layout">
-
-    <!-- SIDEBAR: 景點按鈕庫 -->
-    <aside class="panel sidebar">
-      <h2>景點按鈕庫</h2>
-      <p class="hint">點一下加入目前選取的分頁</p>
-
-      <div id="regionList"></div>
-
-      <div class="region">
-        <p class="region-label">自訂景點</p>
-        <div class="custom-add">
-          <input id="customInput" type="text" placeholder="輸入景點名稱...">
-          <button id="customAddBtn">加入</button>
-        </div>
-      </div>
-    </aside>
-
-    <!-- MAIN: tabs + day panel -->
-    <main class="main-panel">
-      <div class="tabs" id="tabs"></div>
-      <section class="day-panel" id="dayPanel"></section>
-
-      <div class="map-box" id="mapBox">
-        <p class="map-box-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          達睿沖繩地圖（可用地圖右上角圖層選單切換每天景點）
-        </p>
-        <div class="map-frame-wrap">
-          <iframe src="https://www.google.com/maps/d/embed?mid=1nUukCtrtiBM6l6IDU9vJPDJPAjphFNo" loading="lazy"></iframe>
-        </div>
-      </div>
-
-      <footer class="note">此頁為前端暫存工具,重新整理頁面資料將會清空,建議規劃完成後截圖或另行記錄。</footer>
-    </main>
-
-  </div>
-</div>
-
-<script>
-  // ---------- Data ----------
-  const REGIONS = [
-    { label: "北部", spots: [
-      "美麗海海洋館","古宇利島","古宇利大橋","萬座毛","部瀨名海中公園","琉球村","青之洞窟",
-      "花人逢-披薩【可素食】","古宇利蝦蝦飯","shinmei coffee","see living cafe","satchan soba","嘉福阿古豬火鍋","Ark Cafe",
-      "Vegan Cafe Niceness【素食】","Cookhal【素食友善】"
-    ]},
-    { label: "中部", spots: [
-      "美國村","泡瀨","泡瀨漁港","plaza house","港川外人住宅",
-      "kiseki 貝出汁沖繩","丸亀製麺(北谷店)","Hanon-厚鬆餅【素食友善】","hoppepan-麵包","A&W Makiminato 牧港","Sandbox Burgers","Kanna Plus【素食友善】","banta cafe","琉球的牛",
-      "Vegeful Lunch Cafe【素食自助餐】","プロマート業務用食品スーパー 北谷店","San-A Chatan Hamagawa","摩斯漢堡 北谷店","暖暮 北谷砂邊店"
-    ]},
-    { label: "那霸市區", spots: [
-      "國際通","沖繩縣立美術館","Sairaiin (Daruma Temple)","DFS免稅百貨",
-      "eibun 沖繩麵","旅の終わりの朝ごはん -早餐","TAKUYOSHI那霸","琉歌","目利きの銀次 新都心本舗","珀塔瑪-沖繩飯糰【素食友善】","風獅爺雞蛋糕","nona","ちゅらさん6",
-      "浮島ガーデン【素食】","金壺食堂【素食】","とんかつ小やじ那覇店","波上宮","Nakazaya","1-chōme-13-9 Makishi","うみ街"
-    ]},
-    { label: "南部", spots: [
-      "玉泉洞【有素食】","瀨長島","糸滿漁民食堂","糸滿魚市場","ニッシン楽働館","iias沖繩豐崎","Ashibinaa Outlet","Parco City",
-      "山之茶屋・樂水【素食】"
-    ]},
-    { label: "交通／住宿", spots: [
-      "那霸機場","民宿（CHATAN OCEAN Villa）","租車還車"
-    ]}
-  ];
-
-  const DAYS = ["週一","週二","週三","週四","週五"];
-  const DAY_EN = ["10/26","10/27","10/28","10/29","10/30"];
-
-  // in-memory state only — 已從您的我的地圖 KML 同步匯入目前排定的行程
-  let uid = 1;
-  function mkStop(name, time){ return { id: uid++, name, time: time || "" }; }
-
-  const state = {
-    active: 0,
-    days: [
-      [ // 週一 10/26
-        mkStop("CHATAN OCEAN Villa", ""),
-        mkStop("1-chōme-13-9 Makishi", "18:30"),
-        mkStop("プロマート業務用食品スーパー 北谷店", "")
-      ],
-      [ // 週二 10/27
-        mkStop("A&W Makiminato", "09:30"),
-        mkStop("沖繩縣立博物館・美術館", ""),
-        mkStop("DFS Okinawa Naha", ""),
-        mkStop("國際通", ""),
-        mkStop("とんかつ小やじ那覇店", ""),
-        mkStop("瀨長島 Umikaji Terrace", ""),
-        mkStop("ニッシン楽働館", ""),
-        mkStop("iias沖繩豐崎", "19:00")
-      ],
-      [ // 週三 10/28
-        mkStop("うみ街", "17:00"),
-        mkStop("ちゅらさん6沖縄", "20:00")
-      ],
-      [ // 週四 10/29
-        mkStop("沖縄美ら海水族館", "09:30"),
-        mkStop("古宇利蝦蝦飯", ""),
-        mkStop("モリンガの木", ""),
-        mkStop("古宇利大橋", ""),
-        mkStop("花人逢 Pizza", ""),
-        mkStop("Ark Cafe", ""),
-        mkStop("萬座毛", ""),
-        mkStop("暖暮 北谷砂邊店", ""),
-        mkStop("美國村", "")
-      ],
-      [ // 週五 10/30
-        mkStop("摩斯漢堡 北谷店", ""),
-        mkStop("港川外人住宅", ""),
-        mkStop("hoppepan", ""),
-        mkStop("達摩寺", ""),
-        mkStop("玉泉洞", ""),
-        mkStop("糸滿魚市場", ""),
-        mkStop("糸滿漁民食堂", ""),
-        mkStop("沖縄 ASHIBINAA Outlet", ""),
-        mkStop("波上宮", ""),
-        mkStop("Nakazaya", ""),
-        mkStop("租車還車", "17:30"),
-        mkStop("那霸機場", "")
-      ]
-    ]
-  };
-
-  // ---------- Render sidebar ----------
-  const regionListEl = document.getElementById('regionList');
-  REGIONS.forEach(region => {
-    const block = document.createElement('div');
-    block.className = 'region';
-    const label = document.createElement('p');
-    label.className = 'region-label';
-    label.textContent = region.label;
-    block.appendChild(label);
-    region.spots.forEach(spot => {
-      const btn = document.createElement('button');
-      btn.className = 'spot-btn';
-      btn.innerHTML = `
-        <span class="plus">＋</span>
-        <span class="spot-btn-label">${spot}</span>
-        <span class="spot-btn-map" title="開啟 Google 地圖">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        </span>
-      `;
-      btn.addEventListener('click', (e) => {
-        if (e.target.closest('.spot-btn-map')){
-          e.stopPropagation();
-          openMap(spot);
-        } else {
-          addStop(spot);
-        }
-      });
-      block.appendChild(btn);
-    });
-    regionListEl.appendChild(block);
-  });
-
-  document.getElementById('customAddBtn').addEventListener('click', addCustom);
-  document.getElementById('customInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addCustom();
-  });
-  function addCustom(){
-    const input = document.getElementById('customInput');
-    const val = input.value.trim();
-    if (!val) return;
-    addStop(val);
-    input.value = '';
-  }
-
-  function addStop(name){
-    state.days[state.active].push({ id: uid++, name, time: "" });
-    renderDayPanel();
-  }
-  function removeStop(id){
-    state.days[state.active] = state.days[state.active].filter(s => s.id !== id);
-    renderDayPanel();
-  }
-  function moveStop(id, dir){
-    const list = state.days[state.active];
-    const idx = list.findIndex(s => s.id === id);
-    const newIdx = idx + dir;
-    if (newIdx < 0 || newIdx >= list.length) return;
-    [list[idx], list[newIdx]] = [list[newIdx], list[idx]];
-    renderDayPanel();
-  }
-  function openMap(name){
-    const query = encodeURIComponent(name + ' 沖縄');
-    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
-  }
-
-  function updateTime(id, val){
-    const list = state.days[state.active];
-    const item = list.find(s => s.id === id);
-    if (item) item.time = val;
-  }
-
-  // ---------- Render tabs ----------
-  const tabsEl = document.getElementById('tabs');
-  function renderTabs(){
-    tabsEl.innerHTML = '';
-    DAYS.forEach((label, i) => {
-      const tab = document.createElement('button');
-      tab.className = 'tab' + (i === state.active ? ' active' : '');
-      const count = state.days[i].length;
-      tab.innerHTML = `${label}<span class="day-en">${DAY_EN[i]}</span>${count ? `<span class="count">${count}</span>` : ''}`;
-      tab.addEventListener('click', () => {
-        state.active = i;
-        renderTabs();
-        renderDayPanel();
-      });
-      tabsEl.appendChild(tab);
-    });
-  }
-
-  // ---------- Render day panel ----------
-  const dayPanelEl = document.getElementById('dayPanel');
-  function renderDayPanel(){
-    renderTabs();
-    const list = state.days[state.active];
-    dayPanelEl.innerHTML = '';
-
-    if (list.length === 0){
-      dayPanelEl.innerHTML = `
-        <div class="empty-state">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#17AEC9" stroke-width="1.5"><path d="M12 21c-4-4-8-7.5-8-12a8 8 0 0116 0c0 4.5-4 8-8 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <p>${DAYS[state.active]}目前還沒有景點，從左側點選加入吧</p>
-        </div>`;
-      return;
-    }
-
-    const timeline = document.createElement('div');
-    timeline.className = 'timeline';
-
-    list.forEach((stop, idx) => {
-      const row = document.createElement('div');
-      row.className = 'stop';
-      row.innerHTML = `
-        <div class="stop-time">
-          <input type="text" placeholder="時間" value="${stop.time}" data-id="${stop.id}">
-        </div>
-        <div class="stop-line">
-          <div class="stop-dot"></div>
-          <div class="stop-thread"></div>
-        </div>
-        <div class="stop-card" data-act="map" data-id="${stop.id}" title="開啟 Google 地圖導航">
-          <span>${stop.name}</span>
-          <svg class="map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        </div>
-        <div class="stop-actions">
-          <button data-act="up" data-id="${stop.id}" title="上移">↑</button>
-          <button data-act="down" data-id="${stop.id}" title="下移">↓</button>
-          <button data-act="del" data-id="${stop.id}" class="del" title="刪除">×</button>
-        </div>
-      `;
-      timeline.appendChild(row);
-    });
-
-    dayPanelEl.appendChild(timeline);
-
-    // bind events
-    timeline.querySelectorAll('.stop-time input').forEach(inp => {
-      inp.addEventListener('input', e => updateTime(Number(e.target.dataset.id), e.target.value));
-    });
-    timeline.querySelectorAll('[data-act="up"]').forEach(b => b.addEventListener('click', e => moveStop(Number(e.target.dataset.id), -1)));
-    timeline.querySelectorAll('[data-act="down"]').forEach(b => b.addEventListener('click', e => moveStop(Number(e.target.dataset.id), 1)));
-    timeline.querySelectorAll('[data-act="del"]').forEach(b => b.addEventListener('click', e => removeStop(Number(e.target.dataset.id))));
-    timeline.querySelectorAll('.stop-card[data-act="map"]').forEach(card => card.addEventListener('click', () => {
-      const id = Number(card.dataset.id);
-      const stop = state.days[state.active].find(s => s.id === id);
-      if (stop) openMap(stop.name);
-    }));
-  }
-
-  // ---------- Export read-only version ----------
-  function escapeHtml(str){
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function exportReadOnly(){
-    const hasAny = state.days.some(d => d.length > 0);
-    if (!hasAny){
-      alert('目前還沒有排入任何景點，先安排一些行程再匯出唷！');
-      return;
-    }
-
-    const dayBlocks = state.days.map((list, i) => {
-      const stopsHtml = list.length === 0
-        ? `<p class="ro-empty">${escapeHtml(DAYS[i])}沒有安排行程</p>`
-        : list.map(s => `
-            <div class="ro-stop">
-              <div class="ro-time">${s.time ? escapeHtml(s.time) : '－'}</div>
-              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
-              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name + ' 沖縄')}" target="_blank" rel="noopener noreferrer">
-                <span>${escapeHtml(s.name)}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              </a>
-            </div>`).join('');
-      return `<section class="ro-day" id="ro-day-${i}">${stopsHtml}</section>`;
-    }).join('');
-
-    const radios = DAYS.map((label, i) => `<input type="radio" name="roday" id="roday${i}" class="ro-radio"${i===0?' checked':''}>`).join('');
-
-    const tabBtns = DAYS.map((label, i) => `<label for="roday${i}" class="ro-tab">${escapeHtml(label)}<span class="ro-en">${DAY_EN[i]}</span></label>`).join('');
-
-    const showRules = DAYS.map((label, i) => `#roday${i}:checked ~ .ro-content #ro-day-${i}{ display:block; }`).join('\n  ');
-    const activeRules = DAYS.map((label, i) => `#roday${i}:checked ~ .ro-tabbar label[for="roday${i}"]{ background:var(--ocean-deep); color:#fff; }`).join('\n  ');
-
-    const html = `<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>達睿沖繩員工旅遊・行程表</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -792,8 +40,16 @@
     -webkit-user-select:none; user-select:none;
   }
   .ro-tab .ro-en{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:400; font-size:8.5px; letter-spacing:1px; margin-top:1px; }
-  ${showRules}
-  ${activeRules}
+  #roday0:checked ~ .ro-content #ro-day-0{ display:block; }
+  #roday1:checked ~ .ro-content #ro-day-1{ display:block; }
+  #roday2:checked ~ .ro-content #ro-day-2{ display:block; }
+  #roday3:checked ~ .ro-content #ro-day-3{ display:block; }
+  #roday4:checked ~ .ro-content #ro-day-4{ display:block; }
+  #roday0:checked ~ .ro-tabbar label[for="roday0"]{ background:var(--ocean-deep); color:#fff; }
+  #roday1:checked ~ .ro-tabbar label[for="roday1"]{ background:var(--ocean-deep); color:#fff; }
+  #roday2:checked ~ .ro-tabbar label[for="roday2"]{ background:var(--ocean-deep); color:#fff; }
+  #roday3:checked ~ .ro-tabbar label[for="roday3"]{ background:var(--ocean-deep); color:#fff; }
+  #roday4:checked ~ .ro-tabbar label[for="roday4"]{ background:var(--ocean-deep); color:#fff; }
 </style>
 </head>
 <body>
@@ -805,35 +61,320 @@
     <iframe src="https://www.google.com/maps/d/embed?mid=1nUukCtrtiBM6l6IDU9vJPDJPAjphFNo" loading="lazy"></iframe>
   </div>
 
-  ${radios}
+  <input type="radio" name="roday" id="roday0" class="ro-radio" checked><input type="radio" name="roday" id="roday1" class="ro-radio"><input type="radio" name="roday" id="roday2" class="ro-radio"><input type="radio" name="roday" id="roday3" class="ro-radio"><input type="radio" name="roday" id="roday4" class="ro-radio">
   <div class="ro-content">
-    ${dayBlocks}
+    <section class="ro-day" id="ro-day-0">
+            <div class="ro-stop">
+              <div class="ro-time">11:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E4%B8%AD%E6%A9%9F%E5%A0%B4%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>台中機場</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">13:15</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E5%AE%87_JX302%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>星宇_JX302</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">15:45</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E5%AE%87_JX302%E6%8A%B5%E9%81%94%E6%B2%96%E7%B9%A9%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>星宇_JX302抵達沖繩</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">17:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%B2%96%E7%B9%A9%E7%A7%9F%E8%BB%8A%E5%B1%8B%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>沖繩租車屋</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">18:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=Yasaimakigushiya%20Gururi%20Honten%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>Yasaimakigushiya Gururi Honten</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">21:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=San-A%20Chatan%20Hamagawa%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>San-A Chatan Hamagawa</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">22:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=CHATAN%20OCEAN%20Villa%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>CHATAN OCEAN Villa</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div></section><section class="ro-day" id="ro-day-1">
+            <div class="ro-stop">
+              <div class="ro-time">09:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E8%B5%B7%E5%BA%8A%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>起床</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">10:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=A%26W%20Makiminato%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>A&amp;W Makiminato</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">11:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%B2%96%E7%B9%A9%E7%B8%A3%E7%AB%8B%E5%8D%9A%E7%89%A9%E9%A4%A8%E3%83%BB%E7%BE%8E%E8%A1%93%E9%A4%A8%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>沖繩縣立博物館・美術館</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">13:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=DFS%20Okinawa%20Naha%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>DFS Okinawa Naha</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">15:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E9%82%A3%E9%9C%B8%E5%B8%82%E7%AC%AC%E4%B8%80%E7%89%A7%E5%BF%97%E5%85%AC%E8%A8%AD%E5%B8%82%E5%A0%B4%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>那霸市第一牧志公設市場</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">17:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E7%80%A8%E9%95%B7%E5%B3%B6%20Umikaji%20Terrace%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>瀨長島 Umikaji Terrace</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">17:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E3%83%8B%E3%83%83%E3%82%B7%E3%83%B3%E6%A5%BD%E5%83%8D%E9%A4%A8%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>ニッシン楽働館</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">18:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=Shima%20ShabuShabu%20NAKAMA%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>Shima ShabuShabu NAKAMA</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div></section><section class="ro-day" id="ro-day-2">
+            <div class="ro-stop">
+              <div class="ro-time">－</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E8%87%AA%E7%94%B1%E6%B4%BB%E5%8B%95%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>自由活動</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">16:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E3%81%86%E3%81%BF%E8%A1%97%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>うみ街</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">19:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E3%81%A1%E3%82%85%E3%82%89%E3%81%95%E3%82%936%E6%B2%96%E7%B8%84%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>ちゅらさん6沖縄</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div></section><section class="ro-day" id="ro-day-3">
+            <div class="ro-stop">
+              <div class="ro-time">09:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E8%B5%B7%E5%BA%8A%E5%87%BA%E9%96%80%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>起床出門</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">11:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%B2%96%E7%B8%84%E7%BE%8E%E3%82%89%E6%B5%B7%E6%B0%B4%E6%97%8F%E9%A4%A8%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>沖縄美ら海水族館</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">14:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E3%83%A2%E3%83%AA%E3%83%B3%E3%82%AC%E3%81%AE%E6%9C%A8%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>モリンガの木</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">14:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%A4%E5%AE%87%E5%88%A9%E8%9D%A6%E8%9D%A6%E9%A3%AF%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>古宇利蝦蝦飯</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">15:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=shinmei%20coffee%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>shinmei coffee</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">16:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E8%8A%B1%E4%BA%BA%E9%80%A2%20Pizza%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>花人逢 Pizza</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">17:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=Ark%20Cafe%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>Ark Cafe</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">18:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E8%90%AC%E5%BA%A7%E6%AF%9B%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>萬座毛</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">19:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%9A%96%E6%9A%AE%20%E5%8C%97%E8%B0%B7%E7%A0%82%E9%82%8A%E5%BA%97%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>暖暮 北谷砂邊店</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">20:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E7%BE%8E%E5%9C%8B%E6%9D%91%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>美國村</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div></section><section class="ro-day" id="ro-day-4">
+            <div class="ro-stop">
+              <div class="ro-time">10:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E8%B5%B7%E5%BA%8A%E5%87%BA%E9%96%80%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>起床出門</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">10:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E8%B1%AC%E6%8E%92%E8%9B%8B%E9%A3%AF%E7%B3%B0%E5%8C%97%E8%B0%B7%E5%BA%97%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>豬排蛋飯糰北谷店</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">11:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%B8%AF%E5%B7%9D%E5%A4%96%E4%BA%BA%E4%BD%8F%E5%AE%85%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>港川外人住宅</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">12:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=hoppepan%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>hoppepan</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">14:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E7%8E%89%E6%B3%89%E6%B4%9E%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>玉泉洞</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">17:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%B2%96%E7%B8%84%20ASHIBINAA%20Outlet%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>沖縄 ASHIBINAA Outlet</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">17:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E7%A7%9F%E8%BB%8A%E9%82%84%E8%BB%8A%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>租車還車</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">18:00</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E9%82%A3%E9%9C%B8%E6%A9%9F%E5%A0%B4%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>那霸機場</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">20:30</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E6%98%9F%E5%AE%87_JX313%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>星宇_JX313</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div>
+            <div class="ro-stop">
+              <div class="ro-time">21:20</div>
+              <div class="ro-dotcol"><div class="ro-dot"></div><div class="ro-thread"></div></div>
+              <a class="ro-card" href="https://www.google.com/maps/search/?api=1&query=%E5%8F%B0%E4%B8%AD%E6%A9%9F%E5%A0%B4%20%E6%B2%96%E7%B8%84" target="_blank" rel="noopener noreferrer">
+                <span>台中機場</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </a>
+            </div></section>
   </div>
 
   <div class="ro-tabbar">
-    ${tabBtns}
+    <label for="roday0" class="ro-tab">週一<span class="ro-en">10/26</span></label><label for="roday1" class="ro-tab">週二<span class="ro-en">10/27</span></label><label for="roday2" class="ro-tab">週三<span class="ro-en">10/28</span></label><label for="roday3" class="ro-tab">週四<span class="ro-en">10/29</span></label><label for="roday4" class="ro-tab">週五<span class="ro-en">10/30</span></label>
   </div>
 
   <footer>此為唯讀行程表，如需調整請聯繫行程規劃人員</footer>
 </div>
-</body>
-</html>`;
-
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '達睿沖繩員工旅遊行程表_唯讀版.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  document.getElementById('exportBtn').addEventListener('click', exportReadOnly);
-
-  renderTabs();
-  renderDayPanel();
-</script>
 </body>
 </html>
